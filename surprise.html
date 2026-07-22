@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Happy Birthday!</title>
+  <title>A Special Day for Rairai!</title>
   <style>
     /* Global Styles */
     body {
@@ -18,6 +18,70 @@
       min-height: 100vh;
       overflow-x: hidden;
       position: relative;
+    }
+
+    /* WELCOME OVERLAY SCREEN */
+    .welcome-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #ffe6e6, #f7d6e0);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+      text-align: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .welcome-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .welcome-card {
+      background: white;
+      padding: 2.5rem 2rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .welcome-title {
+      color: #d63384;
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .welcome-subtitle {
+      color: #666;
+      font-size: 0.95rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .start-btn {
+      background-color: #d63384;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: bold;
+      padding: 14px 28px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(214, 51, 132, 0.4);
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    .start-btn:hover {
+      background-color: #b8256f;
+      transform: scale(1.05);
     }
 
     /* Main Container to hold GIFs and Card side-by-side on desktop */
@@ -61,8 +125,9 @@
 
     h1 {
       color: #d63384;
-      font-size: 2.2rem;
+      font-size: 1.9rem;
       margin-bottom: 0.2rem;
+      transition: all 0.3s ease;
     }
 
     .heart { color: #e63946; font-size: 1.5rem; }
@@ -127,6 +192,46 @@
     .timer-number { font-size: 1.3rem; font-weight: bold; color: #d63384; }
     .timer-label { font-size: 0.7rem; color: #777; text-transform: uppercase; letter-spacing: 1px; }
 
+    /* Carousel Cover (Concealed State) */
+    .carousel-cover {
+      width: 100%;
+      height: 300px;
+      border-radius: 15px;
+      background: #fff0f5;
+      border: 2px dashed #ffb6c1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 1rem;
+      box-sizing: border-box;
+      padding: 20px;
+    }
+
+    .carousel-cover p {
+      color: #d63384;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      font-size: 1.05rem;
+    }
+
+    .reveal-carousel-btn {
+      background-color: #d63384;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(214, 51, 132, 0.3);
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .reveal-carousel-btn:hover {
+      background-color: #b8256f;
+      transform: scale(1.05);
+    }
+
     /* Photo Carousel Slider */
     .carousel-container {
       position: relative;
@@ -137,6 +242,7 @@
       margin-bottom: 1rem;
       box-shadow: 0 4px 15px rgba(0,0,0,0.08);
       background-color: #f8f9fa;
+      display: none; /* Concealed by default */
     }
 
     .carousel-slide { display: none; width: 100%; height: 100%; }
@@ -259,13 +365,22 @@
 </head>
 <body>
 
+  <!-- WELCOME OVERLAY SCREEN -->
+  <div class="welcome-overlay" id="welcomeOverlay">
+    <div class="welcome-card">
+      <div class="welcome-title">Hey there Tsukirai! 💕</div>
+      <div class="welcome-subtitle">You found my surprise for you!</div>
+      <button class="start-btn" onclick="startExperience()">Reveal</button>
+    </div>
+  </div>
+
   <!-- FLOATING MUSIC PLAYER -->
   <div class="music-player">
     <button class="music-btn" id="musicBtn" onclick="toggleMusic()">🎵</button>
     <span class="music-text" id="musicStatus">Play Music</span>
   </div>
 
-  <!-- AUDIO ELEMENT (Replace 'song.mp3' with your audio file) -->
+  <!-- AUDIO ELEMENT -->
   <audio id="bgMusic" loop>
     <source src="song.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
@@ -281,7 +396,7 @@
 
     <!-- MAIN CARD -->
     <div class="card">
-      <h1>Happy Birthday! <span class="heart">❤️</span></h1>
+      <h1 id="birthdayHeader">Your Birthday Counter Starts Now! <span class="heart">❤️</span></h1>
 
       <!-- Countdown Timer -->
       <div class="timer-container" id="countdownTimer">
@@ -303,8 +418,14 @@
         </div>
       </div>
 
-      <!-- 26-Photo Carousel -->
-      <div class="carousel-container">
+      <!-- CAROUSEL COVER (CONCEALED PLACEHOLDER) -->
+      <div class="carousel-cover" id="carouselCover">
+        <p>A little collection of our memories together 📸</p>
+        <button class="reveal-carousel-btn" onclick="revealCarousel()">Click to Reveal Memories ✨</button>
+      </div>
+
+      <!-- 26-Photo Carousel (HIDDEN INITIALLY) -->
+      <div class="carousel-container" id="carouselContainer">
         <div class="photo-counter" id="photoCounter">1 / 26</div>
 
         <!-- Photos 1 to 26 -->
@@ -340,7 +461,7 @@
       </div>
 
       <p class="message">
-        To my favorite person, happy birthday! Thank you for bringing so much joy, love, and laughter into my life.
+        I've been really busy lately, but in my spare time I went and tried my best making this website for you! I hope you like it :3
       </p>
 
       <!-- The Pink Mail Envelope -->
@@ -383,11 +504,24 @@
 
   <script>
     // ==========================================
-    // 🎵 MUSIC PLAYER LOGIC
+    // 🎵 MUSIC PLAYER & OVERLAY UNLOCK LOGIC
     // ==========================================
     const bgMusic = document.getElementById("bgMusic");
     const musicBtn = document.getElementById("musicBtn");
     const musicStatus = document.getElementById("musicStatus");
+
+    function startExperience() {
+      // Hide welcome overlay
+      document.getElementById("welcomeOverlay").classList.add("hidden");
+      
+      // Play music directly on tap (bypasses autoplay restrictions)
+      bgMusic.play().then(() => {
+        musicBtn.innerText = "⏸️";
+        musicStatus.innerText = "Playing ♪";
+      }).catch(err => {
+        console.log("Audio play error: ", err);
+      });
+    }
 
     function toggleMusic() {
       if (bgMusic.paused) {
@@ -401,15 +535,18 @@
       }
     }
 
-    // Auto-play music on the first click anywhere on the page
-    document.body.addEventListener('click', function() {
-      if (bgMusic.paused) {
-        bgMusic.play().then(() => {
-          musicBtn.innerText = "⏸️";
-          musicStatus.innerText = "Playing ♪";
-        }).catch(() => {});
+    // ==========================================
+    // 🔒 PASSWORD CHECK & CAROUSEL REVEAL LOGIC
+    // ==========================================
+    function revealCarousel() {
+      const input = prompt("Enter the special passcode to unlock memories 💕:");
+      if (input === "06262020") {
+        document.getElementById("carouselCover").style.display = "none";
+        document.getElementById("carouselContainer").style.display = "block";
+      } else if (input !== null) {
+        alert("Oops! Wrong password! Try again :P");
       }
-    }, { once: true });
+    }
 
     // ==========================================
     // ⚙️ TIMER SETTINGS & TESTING SWITCH
@@ -430,16 +567,23 @@
       const timerContainer = document.getElementById("countdownTimer");
       const surpriseBtn = document.getElementById("surpriseBtn");
       const mailEnvelope = document.getElementById("mailEnvelope");
+      const birthdayHeader = document.getElementById("birthdayHeader");
 
       if (TEST_MODE || difference <= 0) {
         isBirthday = true;
         clearInterval(countdownInterval);
 
+        // Update Header & Container when timer hits 0
+        birthdayHeader.innerHTML = 'Happy Birthday! <span class="heart">❤️</span>';
         timerContainer.innerHTML = "<h2 style='color:#d63384; margin: 0.5rem 0;'>It's Your Special Day! 🎉</h2>";
         surpriseBtn.classList.add("unlocked");
         mailEnvelope.classList.add("revealed");
       } else {
         isBirthday = false;
+        
+        // Initial Header Text before timer finishes
+        birthdayHeader.innerHTML = 'Your Birthday Counter Starts Now! <span class="heart">❤️</span>';
+
         const days = Math.floor(difference / (1000 * 60 * 60 * 24));
         const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
