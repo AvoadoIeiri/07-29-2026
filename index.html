@@ -16,8 +16,102 @@
       align-items: center;
       min-height: 100vh;
       box-sizing: border-box;
+      position: relative;
     }
 
+    /* TEASER OVERLAY STYLING */
+    .teaser-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #ffe6e6, #f7d6e0);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      padding: 20px;
+      box-sizing: border-box;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    .teaser-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .teaser-card {
+      background: white;
+      padding: 2.5rem 2rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+    }
+
+    .teaser-title {
+      color: #d63384;
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+    }
+
+    .teaser-subtitle {
+      color: #666;
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+    }
+
+    .teaser-buttons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      min-height: 60px;
+    }
+
+    .teaser-btn-yes {
+      background-color: #d63384;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: bold;
+      padding: 12px 28px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(214, 51, 132, 0.4);
+      transition: transform 0.2s ease, background-color 0.2s ease;
+      z-index: 10001;
+    }
+
+    .teaser-btn-yes.accepted {
+      position: static !important;
+      transform: scale(1.1) !important;
+      background-color: #28a745 !important;
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4) !important;
+    }
+
+    .teaser-btn-no {
+      background-color: #6c757d;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: bold;
+      padding: 12px 28px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .teaser-btn-no:hover {
+      background-color: #5a6268;
+    }
+
+    /* MAIN CONTAINER STYLING */
     .container {
       background: white;
       padding: 2.5rem;
@@ -192,9 +286,22 @@
 </head>
 <body>
 
+  <!-- TEASER OVERLAY SCREEN -->
+  <div class="teaser-overlay" id="teaserOverlay">
+    <div class="teaser-card">
+      <div class="teaser-title">I prepared something for you... 💕</div>
+      <div class="teaser-subtitle">Do you accept?</div>
+      <div class="teaser-buttons">
+        <button class="teaser-btn-yes" id="yesBtn" onclick="handleYesClick()">Yes! ✨</button>
+        <button class="teaser-btn-no" onclick="handleNoClick()">No 😜</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CHALLENGE CONTAINER -->
   <div class="container">
-    <h1>Welcome, Rairai!</h1>
-    <p class="subtitle">Complete the challenge below to unlock your birthday surprise!</p>
+    <h1>Welcome, Tsukirai</h1>
+    <p class="subtitle">Complete the challenge below to unlock your surprise!</p>
 
     <!-- FAKE HEALTH BAR UI -->
     <div class="hp-section">
@@ -210,7 +317,7 @@
     <!-- NICKNAME BYPASS SECTION -->
     <div class="bypass-section">
       <div class="bypass-text">
-        "I gave you this nickname, and I know you've already forgotten about it, but.. if you remember it, it'll save you from this difficult quiz that I have prepared for you"
+        "I gave you this nickname, and I know you've already forgotten about it, but.. if you remember it, it'll save you time from this difficult quiz that I have prepared for you"
       </div>
       <div class="input-group">
         <input type="text" id="passwordInput" placeholder="Enter secret nickname...">
@@ -220,8 +327,8 @@
 
     <hr class="divider">
 
-    <h2>...Or Take The 6-Question Quiz!</h2>
-    <p style="font-size: 0.85rem; color: #777;">(Note: You need a 100% perfect score to reveal the secret password!)</p>
+    <h2>...Or take the Quiz that I prepared, Just for You :P</h2>
+    <p style="font-size: 0.85rem; color: #777;">(Note: You need hit a perfect score to reveal the password :3)</p>
 
     <!-- QUIZ CONTAINER -->
     <div id="quizContainer">
@@ -299,13 +406,68 @@
 
   <script>
     // ==========================================
+    // TEASER OVERLAY RUNAWAY BUTTON LOGIC
+    // ==========================================
+    let yesClickCount = 0;
+    const TOTAL_MOVES = 10;
+    const yesBtn = document.getElementById("yesBtn");
+
+    const teaserPhrases = [
+      "Wait, catch me! 😜",
+      "Nope, over here! 🏃‍♀️",
+      "Too slow! 😝",
+      "Almost got it! 🤏",
+      "Try again! 😜",
+      "Whoops! 🙈",
+      "Dodge! ⚡",
+      "Getting closer! 💖",
+      "One more! 🏃‍♂️",
+      "OKAY, I ACCEPT! 🎉"
+    ];
+
+    function handleYesClick() {
+      if (yesClickCount < TOTAL_MOVES) {
+        yesClickCount++;
+
+        if (yesClickCount < TOTAL_MOVES) {
+          // Calculate random screen position safely within viewport padding
+          const padding = 60;
+          const randomX = Math.random() * (window.innerWidth - yesBtn.offsetWidth - (padding * 2)) + padding;
+          const randomY = Math.random() * (window.innerHeight - yesBtn.offsetHeight - (padding * 2)) + padding;
+
+          yesBtn.style.position = "fixed";
+          yesBtn.style.left = `${randomX}px`;
+          yesBtn.style.top = `${randomY}px`;
+
+          // Slightly decrease scale each click down to 0.7x
+          const scale = 1 - (yesClickCount * 0.03);
+          yesBtn.style.transform = `scale(${scale})`;
+
+          // Update text dynamically
+          yesBtn.innerText = teaserPhrases[yesClickCount - 1];
+        } else {
+          // 10th Click achieved! Turn green and make clickable to proceed
+          yesBtn.innerText = teaserPhrases[TOTAL_MOVES - 1];
+          yesBtn.classList.add("accepted");
+        }
+      } else {
+        // Dismiss overlay when clicked after 10 dodge cycles
+        document.getElementById("teaserOverlay").classList.add("hidden");
+      }
+    }
+
+    function handleNoClick() {
+      alert("Hey! 'No' is not an option! Try clicking Yes instead :P");
+    }
+
+    // ==========================================
     // CONFIGURATION
     // ==========================================
     
     // Secret Nickname Password
     const SECRET_PASSWORD = "min lilla sotis";
 
-    // Set correct answer letter ('A', 'B', 'C', or 'D') for each question
+    // Correct answers
     const CORRECT_ANSWERS = {
       1: 'A',
       2: 'B',
@@ -315,7 +477,7 @@
       6: 'B'
     };
 
-    // CUSTOMIZE YOUR REDIRECT LINK HERE:
+    // Redirect link
     const REDIRECT_URL = "surprise.html"; 
 
     // ==========================================
@@ -327,7 +489,7 @@
     const userAnswers = {};
 
     function reduceHealth(amount) {
-      if (currentLives <= 0) return; // Stop deducting once HP hits 0
+      if (currentLives <= 0) return; 
 
       currentLives = Math.max(0, currentLives - amount);
       
@@ -338,7 +500,6 @@
       hpFill.style.width = percentage + "%";
       hpText.innerText = `${currentLives} / ${MAX_LIVES} Tries`;
 
-      // Trigger Prank alert ONCE when HP reaches 0 and keep HP at 0
       if (currentLives === 0 && !prankTriggered) {
         prankTriggered = true;
         setTimeout(() => {
@@ -354,7 +515,7 @@
         alert("Tama ah, Nag backread siguro to. HAHAHA loading..");
         window.location.href = REDIRECT_URL;
       } else {
-        reduceHealth(1); // Deduct 1 HP for a wrong password attempt
+        reduceHealth(1);
         alert("Oops! That's not quite right. Try again or answer the quiz below!");
       }
     }
@@ -380,7 +541,6 @@
         return;
       }
 
-      // Count correct answers
       for (let i = 1; i <= totalQuestions; i++) {
         if (userAnswers[i] === CORRECT_ANSWERS[i]) {
           score++;
@@ -394,7 +554,6 @@
           Here is your secret password to unlock the surprise above:
           <br><span class="password-reveal">${SECRET_PASSWORD}</span>
         `;
-        // Scroll smoothly back up to the password box so she can enter it!
         document.querySelector('.bypass-section').scrollIntoView({ behavior: 'smooth' });
       } else {
         let wrongCount = totalQuestions - score;
