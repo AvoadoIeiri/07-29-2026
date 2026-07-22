@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Secret Challenge for Rairai!</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #ffe6e6, #f7d6e0);
+      color: #4a4a4a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+
+    .container {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      max-width: 650px;
+      width: 100%;
+      text-align: center;
+    }
+
+    h1 { color: #d63384; margin-bottom: 0.5rem; }
+    p.subtitle { font-size: 0.95rem; color: #666; margin-bottom: 1rem; }
+
+    /* HP BAR STYLING */
+    .hp-section {
+      background: #fff5f8;
+      border: 1px solid #ffccd5;
+      border-radius: 12px;
+      padding: 10px 15px;
+      margin-bottom: 1.5rem;
+    }
+
+    .hp-header {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      color: #d63384;
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+    }
+
+    .hp-bar-bg {
+      background: #e0e0e0;
+      height: 18px;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .hp-bar-fill {
+      background: linear-gradient(90deg, #ff4d6d, #ff758f);
+      height: 100%;
+      width: 100%;
+      transition: width 0.4s ease-in-out;
+    }
+
+    /* Bypass Password Box Section */
+    .bypass-section {
+      background: #fff0f5;
+      border: 2px dashed #ffb6c1;
+      border-radius: 15px;
+      padding: 1.2rem;
+      margin-bottom: 2rem;
+    }
+
+    .bypass-text {
+      font-size: 0.95rem;
+      color: #b8256f;
+      font-weight: 600;
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+
+    .input-group {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    input[type="text"] {
+      padding: 10px 16px;
+      border: 2px solid #ffb6c1;
+      border-radius: 20px;
+      outline: none;
+      font-size: 1rem;
+      width: 60%;
+      text-align: center;
+    }
+
+    input[type="text"]:focus { border-color: #d63384; }
+
+    .btn {
+      background-color: #d63384;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .btn:hover {
+      background-color: #b8256f;
+      transform: scale(1.03);
+    }
+
+    hr.divider {
+      border: none;
+      border-top: 2px solid #eee;
+      margin: 2rem 0;
+    }
+
+    /* Quiz Styling */
+    .quiz-card {
+      text-align: left;
+      background: #fafafa;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      padding: 1.2rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .question-title {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 0.8rem;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 500px) {
+      .options-grid { grid-template-columns: 1fr; }
+    }
+
+    .option-btn {
+      background: white;
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: left;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .option-btn:hover {
+      border-color: #ffb6c1;
+      background: #fff0f5;
+    }
+
+    .option-btn.selected {
+      background: #d63384;
+      color: white;
+      border-color: #d63384;
+    }
+
+    .feedback-msg {
+      margin-top: 1rem;
+      font-weight: bold;
+      min-height: 24px;
+      line-height: 1.6;
+    }
+
+    .password-reveal {
+      display: inline-block;
+      background: #fff;
+      border: 2px dashed #28a745;
+      color: #28a745;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Welcome, Rairai!</h1>
+    <p class="subtitle">Complete the challenge below to unlock your birthday surprise!</p>
+
+    <!-- FAKE HEALTH BAR UI -->
+    <div class="hp-section">
+      <div class="hp-header">
+        <span>Player HP</span>
+        <span id="hpText">10 / 10 Tries</span>
+      </div>
+      <div class="hp-bar-bg">
+        <div class="hp-bar-fill" id="hpFill"></div>
+      </div>
+    </div>
+
+    <!-- NICKNAME BYPASS SECTION -->
+    <div class="bypass-section">
+      <div class="bypass-text">
+        "I gave you this nickname, and I know you've already forgotten about it, but.. if you remember it, it'll save you from this difficult quiz that I have prepared for you"
+      </div>
+      <div class="input-group">
+        <input type="text" id="passwordInput" placeholder="Enter secret nickname...">
+        <button class="btn" onclick="checkPassword()">Unlock</button>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <h2>...Or Take The 6-Question Quiz!</h2>
+    <p style="font-size: 0.85rem; color: #777;">(Note: You need a 100% perfect score to reveal the secret password!)</p>
+
+    <!-- QUIZ CONTAINER -->
+    <div id="quizContainer">
+      <!-- Q1 -->
+      <div class="quiz-card">
+        <div class="question-title">1. When is our Anniverary?</div>
+        <div class="options-grid">
+          <button class="option-btn" onclick="selectOption(1, 'A', this)">A) All of the Above</button>
+          <button class="option-btn" onclick="selectOption(1, 'B', this)">B) June, 26, 2020</button>
+          <button class="option-btn" onclick="selectOption(1, 'C', this)">C) Ika-dalawampu't anim ng Hunyo, dalawang libo dalawampu</button>
+          <button class="option-btn" onclick="selectOption(1, 'D', this)">D) 06/26/2020</button>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="quiz-card">
+        <div class="question-title">2. What is my Favorite Food of all time?</div>
+        <div class="options-grid">
+          <button class="option-btn" onclick="selectOption(2, 'A', this)">A) Bisteak (Beef & Pork) tas napakadaming sibuyas</button>
+          <button class="option-btn" onclick="selectOption(2, 'B', this)">B) Sinigang na Baboy na malapot ang sabaw</button>
+          <button class="option-btn" onclick="selectOption(2, 'C', this)">C) Burger ng Zark's</button>
+          <button class="option-btn" onclick="selectOption(2, 'D', this)">D) Fried Chicken ng Popeye's</button>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="quiz-card">
+        <div class="question-title">3. What is my Favorite Anime of all time?</div>
+        <div class="options-grid">
+          <button class="option-btn" onclick="selectOption(3, 'A', this)">A) Jojo's Bizzare Adventure</button>
+          <button class="option-btn" onclick="selectOption(3, 'B', this)">B) Frieren Beyond Journey's End</button>
+          <button class="option-btn" onclick="selectOption(3, 'C', this)">C) That time I got reincarted as a Slime!</button>
+          <button class="option-btn" onclick="selectOption(3, 'D', this)">D) Charlotte</button>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="quiz-card">
+        <div class="question-title">4. Who is my Favorite Spiderman Actor?</div>
+        <div class="options-grid">
+          <button class="option-btn" onclick="selectOption(4, 'A', this)">A) Tom Holland</button>
+          <button class="option-btn" onclick="selectOption(4, 'B', this)">B) Tobey Maguire</button>
+          <button class="option-btn" onclick="selectOption(4, 'C', this)">C) Shameik Moore</button>
+          <button class="option-btn" onclick="selectOption(4, 'D', this)">D) My Baby Andrew Garfield</button>
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="quiz-card">
+        <div class="question-title">5. Favorite Horror Movie?</div>
+        <div class="options-grid">
+          <button class="option-btn" onclick="selectOption(5, 'A', this)">A) La La Land</button>
+          <button class="option-btn" onclick="selectOption(5, 'B', this)">B) Hell House</button>
+          <button class="option-btn" onclick="selectOption(5, 'C', this)">C) Unfriended</button>
+          <button class="option-btn" onclick="selectOption(5, 'D', this)">D) The Conjuring</button>
+        </div>
+      </div>
+
+      <!-- Q6 -->
+      <div class="quiz-card">
+        <div class="question-title">6. What is my favorite Nickname?</div>
+        <div class="options-grid">
+          <button class="option-btn" onclick="selectOption(6, 'A', this)">A) Seij/Seijuro</button>
+          <button class="option-btn" onclick="selectOption(6, 'B', this)">B) Tencha Ieiri</button>
+          <button class="option-btn" onclick="selectOption(6, 'C', this)">C) Mukkun</button>
+          <button class="option-btn" onclick="selectOption(6, 'D', this)">D) Skully</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn" style="width: 100%; font-size: 1.1rem; padding: 12px;" onclick="submitQuiz()">Submit Quiz Answers</button>
+    <div class="feedback-msg" id="feedback"></div>
+
+  </div>
+
+  <script>
+    // ==========================================
+    // CONFIGURATION
+    // ==========================================
+    
+    // Secret Nickname Password
+    const SECRET_PASSWORD = "min lilla sotis";
+
+    // Set correct answer letter ('A', 'B', 'C', or 'D') for each question
+    const CORRECT_ANSWERS = {
+      1: 'A',
+      2: 'B',
+      3: 'C',
+      4: 'D',
+      5: 'A',
+      6: 'B'
+    };
+
+    // CUSTOMIZE YOUR REDIRECT LINK HERE:
+    const REDIRECT_URL = "birthday.html"; 
+
+    // ==========================================
+    // LIVES & HEALTH LOGIC
+    // ==========================================
+    const MAX_LIVES = 10;
+    let currentLives = MAX_LIVES;
+    let prankTriggered = false;
+    const userAnswers = {};
+
+    function reduceHealth(amount) {
+      if (currentLives <= 0) return; // Stop deducting once HP hits 0
+
+      currentLives = Math.max(0, currentLives - amount);
+      
+      const hpFill = document.getElementById("hpFill");
+      const hpText = document.getElementById("hpText");
+
+      const percentage = (currentLives / MAX_LIVES) * 100;
+      hpFill.style.width = percentage + "%";
+      hpText.innerText = `${currentLives} / ${MAX_LIVES} Tries`;
+
+      // Trigger Prank alert ONCE when HP reaches 0 and keep HP at 0
+      if (currentLives === 0 && !prankTriggered) {
+        prankTriggered = true;
+        setTimeout(() => {
+          alert("YOU GOT PRANKED! You actually have UNLIMITED tries, don't worry!");
+        }, 300);
+      }
+    }
+
+    function checkPassword() {
+      const input = document.getElementById("passwordInput").value.trim().toLowerCase();
+      
+      if (input === SECRET_PASSWORD.toLowerCase()) {
+        alert("Tama ah, Nag backread siguro to. HAHAHA loading..");
+        window.location.href = REDIRECT_URL;
+      } else {
+        reduceHealth(1); // Deduct 1 HP for a wrong password attempt
+        alert("Oops! That's not quite right. Try again or answer the quiz below!");
+      }
+    }
+
+    function selectOption(questionNum, choice, btnElement) {
+      userAnswers[questionNum] = choice;
+
+      const parentGrid = btnElement.parentElement;
+      const buttons = parentGrid.querySelectorAll('.option-btn');
+      buttons.forEach(b => b.classList.remove('selected'));
+
+      btnElement.classList.add('selected');
+    }
+
+    function submitQuiz() {
+      const feedback = document.getElementById("feedback");
+      let score = 0;
+      let totalQuestions = 6;
+
+      if (Object.keys(userAnswers).length < totalQuestions) {
+        feedback.style.color = "#d63384";
+        feedback.innerHTML = "Please answer all 6 questions before submitting!";
+        return;
+      }
+
+      // Count correct answers
+      for (let i = 1; i <= totalQuestions; i++) {
+        if (userAnswers[i] === CORRECT_ANSWERS[i]) {
+          score++;
+        }
+      }
+
+      if (score === totalQuestions) {
+        feedback.style.color = "#28a745";
+        feedback.innerHTML = `
+          PERFECT SCORE! 6/6!<br>
+          Here is your secret password to unlock the surprise above:
+          <br><span class="password-reveal">${SECRET_PASSWORD}</span>
+        `;
+        // Scroll smoothly back up to the password box so she can enter it!
+        document.querySelector('.bypass-section').scrollIntoView({ behavior: 'smooth' });
+      } else {
+        let wrongCount = totalQuestions - score;
+        let hpDeduction = Math.min(wrongCount, 2);
+        
+        reduceHealth(hpDeduction);
+
+        feedback.style.color = "#dc3545";
+        feedback.innerHTML = `You scored ${score}/6! (-${hpDeduction} HP) You need 6/6 to get the secret password. Try again!`;
+      }
+    }
+  </script>
+
+</body>
+</html>
