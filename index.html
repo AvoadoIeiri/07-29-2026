@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>A Secret Challenge for Rairai!</title>
+  <title>... :P</title>
   <style>
     body {
       margin: 0;
@@ -399,7 +399,7 @@
       </div>
     </div>
 
-    <button class="btn" style="width: 100%; font-size: 1.1rem; padding: 12px;" onclick="submitQuiz()">Submit Quiz Answers</button>
+    <button class="btn" style="width: 100%; font-size: 1.1rem; padding: 12px;" onclick="submitQuiz()">Tapos kana? Sige</button>
     <div class="feedback-msg" id="feedback"></div>
 
   </div>
@@ -457,7 +457,7 @@
     }
 
     function handleNoClick() {
-      alert("Hey! 'No' is not an option! Try clicking Yes instead :P");
+      alert("Beh ang arte, sige wag na tampo na q");
     }
 
     // ==========================================
@@ -503,7 +503,7 @@
       if (currentLives === 0 && !prankTriggered) {
         prankTriggered = true;
         setTimeout(() => {
-          alert("YOU GOT PRANKED! You actually have UNLIMITED tries, don't worry!");
+          alert("eme lang unli tries ka syempre, bida ka e HAHAHA");
         }, 300);
       }
     }
@@ -516,7 +516,7 @@
         window.location.href = REDIRECT_URL;
       } else {
         reduceHealth(1);
-        alert("Oops! That's not quite right. Try again or answer the quiz below!");
+        alert("Pag di alam wag pilitin hays, may quiz naman sa baba ohhh");
       }
     }
 
@@ -537,7 +537,7 @@
 
       if (Object.keys(userAnswers).length < totalQuestions) {
         feedback.style.color = "#d63384";
-        feedback.innerHTML = "Please answer all 6 questions before submitting!";
+        feedback.innerHTML = "Beh sagutan mo muna kaya lahat?";
         return;
       }
 
@@ -550,8 +550,8 @@
       if (score === totalQuestions) {
         feedback.style.color = "#28a745";
         feedback.innerHTML = `
-          PERFECT SCORE! 6/6!<br>
-          Here is your secret password to unlock the surprise above:
+          ay wow perfect may kodigo to for sure<br>
+          sige eto na, ilagay mo to sa taas ah.. madaya!:
           <br><span class="password-reveal">${SECRET_PASSWORD}</span>
         `;
         document.querySelector('.bypass-section').scrollIntoView({ behavior: 'smooth' });
@@ -562,7 +562,7 @@
         reduceHealth(hpDeduction);
 
         feedback.style.color = "#dc3545";
-        feedback.innerHTML = `You scored ${score}/6! (-${hpDeduction} HP) You need 6/6 to get the secret password. Try again!`;
+        feedback.innerHTML = `Score mo: ${score}/6! (-${hpDeduction} HP) Hays mali nanaman siya..`;
       }
     }
   </script>
