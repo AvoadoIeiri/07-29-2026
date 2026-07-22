@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday!</title>
+  <style>
+    /* Global Styles */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #ffe6e6, #f7d6e0);
+      color: #4a4a4a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Main Container to hold GIFs and Card side-by-side on desktop */
+    .page-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 30px;
+      width: 100%;
+      max-width: 1200px;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    /* Left & Right GIF Slots */
+    .side-gif {
+      width: 250px;
+      height: 250px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .side-gif img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .card {
+      background: white;
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+      margin: 20px 0;
+    }
+
+    h1 {
+      color: #d63384;
+      font-size: 2.2rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .heart { color: #e63946; font-size: 1.5rem; }
+
+    /* Floating Music Player Styling */
+    .music-player {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 8px 16px;
+      border-radius: 25px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 999;
+      border: 1px solid #ffb6c1;
+    }
+
+    .music-btn {
+      background: #d63384;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      transition: transform 0.2s;
+    }
+
+    .music-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .music-text {
+      font-size: 0.8rem;
+      color: #d63384;
+      font-weight: bold;
+    }
+
+    /* Countdown Timer Styling */
+    .timer-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 1.2rem 0;
+    }
+
+    .timer-box {
+      background: #fff0f5;
+      border: 1px solid #ffb6c1;
+      border-radius: 10px;
+      padding: 8px 10px;
+      min-width: 50px;
+    }
+
+    .timer-number { font-size: 1.3rem; font-weight: bold; color: #d63384; }
+    .timer-label { font-size: 0.7rem; color: #777; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* Photo Carousel Slider */
+    .carousel-container {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      border-radius: 15px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      background-color: #f8f9fa;
+    }
+
+    .carousel-slide { display: none; width: 100%; height: 100%; }
+    .carousel-slide.active { display: block; }
+    .carousel-slide img { width: 100%; height: 100%; object-fit: cover; }
+
+    .prev, .next {
+      cursor: pointer; position: absolute; top: 50%; transform: translateY(-50%);
+      padding: 10px 14px; color: white; font-weight: bold; font-size: 16px;
+      border-radius: 50%; background-color: rgba(0,0,0,0.4); border: none;
+      transition: background-color 0.2s;
+    }
+    .prev:hover, .next:hover { background-color: rgba(0,0,0,0.7); }
+    .prev { left: 10px; } .next { right: 10px; }
+
+    .caption {
+      position: absolute; bottom: 0; width: 100%;
+      background: rgba(0, 0, 0, 0.5); color: white; padding: 8px 0; font-size: 0.85rem;
+    }
+
+    .photo-counter {
+      position: absolute; top: 10px; right: 10px;
+      background: rgba(0,0,0,0.5); color: white;
+      padding: 4px 10px; border-radius: 12px; font-size: 0.75rem;
+    }
+
+    p.message { line-height: 1.6; font-size: 1rem; color: #333; }
+
+    /* The Reveal Button */
+    .button {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 12px 24px;
+      background-color: #d63384;
+      color: white;
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: bold;
+      border: none;
+      opacity: 0.5;
+      cursor: not-allowed;
+      transition: all 0.3s ease;
+    }
+
+    .button.unlocked {
+      opacity: 1;
+      cursor: pointer;
+    }
+    .button.unlocked:hover {
+      background-color: #b8256f;
+      transform: scale(1.05);
+    }
+
+    /* Mail Slide-In Styling */
+    .mail-container {
+      margin-top: 1.2rem;
+      opacity: 0;
+      display: none;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    @keyframes slideInMail {
+      0% { transform: translateX(-150%) rotate(-10deg); opacity: 0; }
+      100% { transform: translateX(0) rotate(0deg); opacity: 1; }
+    }
+
+    .mail-container.revealed {
+      display: block;
+      animation: slideInMail 1s ease-out forwards;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+
+    .envelope {
+      width: 55px; height: 38px; fill: #ffb6c1; stroke: #d63384;
+      stroke-width: 2px; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.1));
+      transition: transform 0.2s ease;
+    }
+    .mail-container:hover .envelope { transform: scale(1.1) translateY(-3px); }
+
+    /* Modal Letter Styling */
+    .letter-modal {
+      display: none; position: fixed; z-index: 1000;
+      left: 0; top: 0; width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.6);
+      justify-content: center; align-items: center;
+      opacity: 0; transition: opacity 0.4s ease;
+    }
+    .letter-modal.open { display: flex; opacity: 1; }
+
+    .letter-content {
+      background: #fffafa; border: 3px solid #ffb6c1;
+      padding: 2rem; border-radius: 15px;
+      max-width: 80%; max-height: 80vh; overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2); position: relative;
+      font-family: 'Georgia', serif;
+    }
+
+    .close-letter {
+      position: absolute; top: 10px; right: 15px;
+      font-size: 1.8rem; font-weight: bold; color: #777; cursor: pointer;
+    }
+    .close-letter:hover { color: #d63384; }
+
+    .letter-text { line-height: 1.8; color: #444; font-size: 1rem; text-align: left; }
+    .letter-sig { text-align: right; margin-top: 1rem; color: #d63384; }
+
+    /* Responsive adjustments for mobile screens */
+    @media (max-width: 900px) {
+      .page-wrapper {
+        flex-direction: column;
+      }
+      .side-gif {
+        width: 180px;
+        height: 180px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- FLOATING MUSIC PLAYER -->
+  <div class="music-player">
+    <button class="music-btn" id="musicBtn" onclick="toggleMusic()">🎵</button>
+    <span class="music-text" id="musicStatus">Play Music</span>
+  </div>
+
+  <!-- AUDIO ELEMENT (Replace 'song.mp3' with your audio file) -->
+  <audio id="bgMusic" loop>
+    <source src="song.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <!-- PAGE WRAPPER FOR SIDE GIFS AND CARD -->
+  <div class="page-wrapper">
+    
+    <!-- LEFT GIF SLOT -->
+    <div class="side-gif">
+      <img src="left-gif.gif" alt="Left GIF">
+    </div>
+
+    <!-- MAIN CARD -->
+    <div class="card">
+      <h1>Happy Birthday! <span class="heart">❤️</span></h1>
+
+      <!-- Countdown Timer -->
+      <div class="timer-container" id="countdownTimer">
+        <div class="timer-box">
+          <div class="timer-number" id="days">00</div>
+          <div class="timer-label">Days</div>
+        </div>
+        <div class="timer-box">
+          <div class="timer-number" id="hours">00</div>
+          <div class="timer-label">Hours</div>
+        </div>
+        <div class="timer-box">
+          <div class="timer-number" id="minutes">00</div>
+          <div class="timer-label">Mins</div>
+        </div>
+        <div class="timer-box">
+          <div class="timer-number" id="seconds">00</div>
+          <div class="timer-label">Secs</div>
+        </div>
+      </div>
+
+      <!-- 26-Photo Carousel -->
+      <div class="carousel-container">
+        <div class="photo-counter" id="photoCounter">1 / 26</div>
+
+        <!-- Photos 1 to 26 -->
+        <div class="carousel-slide active"><img src="photo1.jpg" alt="1"><div class="caption">Double Thumbs up moment natin sa MOA HAHAHA</div></div>
+        <div class="carousel-slide"><img src="photo2.jpg" alt="2"><div class="caption">Eyy pose daw para di halatang pagod na</div></div>
+        <div class="carousel-slide"><img src="photo3.jpg" alt="3"><div class="caption">peke smile niya kasi di nadaw nabili dried mango niya HAHAHAHA</div></div>
+        <div class="carousel-slide"><img src="photo4.jpg" alt="4"><div class="caption">Peace sign bago sumigaw</div></div>
+        <div class="carousel-slide"><img src="photo5.jpg" alt="5"><div class="caption">Nag Zagu after niya umiyak sa rides HAHAHA T _ T</div></div>
+        <div class="carousel-slide"><img src="photo6.jpg" alt="6"><div class="caption">Umiyak man at least may Matcha daw siya eyy</div></div>
+        <div class="carousel-slide"><img src="photo7.jpg" alt="7"><div class="caption">Nakangiti kami niyan pero gigil na kami kay ate tagal mag papasok</div></div>
+        <div class="carousel-slide"><img src="photo8.jpg" alt="8"><div class="caption">Heart pose daw kasi wala na siyang maisip HAHAHA</div></div>
+        <div class="carousel-slide"><img src="photo9.jpg" alt="9"><div class="caption">Sungit effect siya kasi wala pang pagkain</div></div>
+        <div class="carousel-slide"><img src="photo10.jpg" alt="10"><div class="caption">Wala sinabihan kong "kakain" e HAHAHA</div></div>
+        <div class="carousel-slide"><img src="photo11.jpg" alt="11"><div class="caption">Kunwari may tinitignan ako pero gusto lang lumapit :3</div></div>
+        <div class="carousel-slide"><img src="photo12.jpg" alt="12"><div class="caption">Luh makatingin oh crush mo?</div></div>
+        <div class="carousel-slide"><img src="photo13.jpg" alt="13"><div class="caption">Uy hala! may bata po!</div></div>
+        <div class="carousel-slide"><img src="photo14.jpg" alt="14"><div class="caption">Nasa dagat na sila</div></div>
+        <div class="carousel-slide"><img src="photo15.jpg" alt="15"><div class="caption">Picture kahit nababagot na sa haba ng pila :))</div></div>
+        <div class="carousel-slide"><img src="photo16.jpg" alt="16"><div class="caption">Eyy first picture sa iphone fully snatched.. eme</div></div>
+        <div class="carousel-slide"><img src="photo17.jpg" alt="17"><div class="caption">Hala nag rewind yung pic, miss ko na kasi dito.. kain tayo ulit next time :3</div></div>
+        <div class="carousel-slide"><img src="photo18.jpg" alt="18"><div class="caption">Swimming sila niyan tas nabusog sa uncle john's</div></div>
+        <div class="carousel-slide"><img src="photo19.jpg" alt="19"><div class="caption">Mood swings beh kanina uncle john's ngayon popeye's</div></div>
+        <div class="carousel-slide"><img src="photo20.jpg" alt="20"><div class="caption">Kunwari kita mukha ko ha? HAHAHAHA T _ T</div></div>
+        <div class="carousel-slide"><img src="photo21.jpg" alt="21"><div class="caption">Ayan kita na, pero icl cute natin dito :3</div></div>
+        <div class="carousel-slide"><img src="photo22.jpg" alt="22"><div class="caption">Aww first ride niya bago umiyak sa disk ride T _ T</div></div>
+        <div class="carousel-slide"><img src="photo23.jpg" alt="23"><div class="caption">Moments before Disaster XD</div></div>
+        <div class="carousel-slide"><img src="photo24.jpg" alt="24"><div class="caption">Kamiss ditoo kahit ang pangit ng service nila HAHAHAHA</div></div>
+        <div class="carousel-slide"><img src="photo25.jpg" alt="25"><div class="caption">Eto yung moment na nahilo ako kasi binangga mo ako ng sobrang lakas HAHAHAHA</div></div>
+        <div class="carousel-slide"><img src="photo26.jpg" alt="26"><div class="caption">Aww look at my pretty baby napaka cutie &lt;3</div></div>
+
+        <button class="prev" onclick="changeSlide(-1)">&#10094;</button>
+        <button class="next" onclick="changeSlide(1)">&#10095;</button>
+      </div>
+
+      <p class="message">
+        To my favorite person, happy birthday! Thank you for bringing so much joy, love, and laughter into my life.
+      </p>
+
+      <!-- The Pink Mail Envelope -->
+      <div class="mail-container" id="mailEnvelope" onclick="openLetter()">
+        <svg class="envelope" viewBox="0 0 24 16" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22 0H2C0.9 0 0 0.9 0 2V14C0 15.1 0.9 16 2 16H22C23.1 16 24 15.1 24 14V2C24 0.9 23.1 0 22 0ZM20.6 2L12 7.1L3.4 2H20.6ZM2 14V3.8L12 9.7L22 3.8V14H2Z"/>
+        </svg>
+        <div style="font-size: 0.8rem; color:#d63384;">Open your message</div>
+      </div>
+
+      <!-- Surprise Button -->
+      <button class="button" id="surpriseBtn" onclick="trySurprise()">Celebrate!</button>
+    </div>
+
+    <!-- RIGHT GIF SLOT -->
+    <div class="side-gif">
+      <img src="right-gif.gif" alt="Right GIF">
+    </div>
+
+  </div>
+
+  <!-- LOVE LETTER MODAL -->
+  <div class="letter-modal" id="letterModal">
+    <div class="letter-content">
+      <span class="close-letter" onclick="closeLetter()">&times;</span>
+      <div class="letter-text">
+        <p>My Dearest Rairai,</p>
+        <p>First of all, Happy Birthday!</p>
+        <p>Out of all the people in this world has created,</p>
+        <p>With all the different roads I could have taken and lived,</p>
+        <p>Some Miracle allowed My Story to cross path with Yours ,</p>
+        <p>And if I spend the rest of my life searching for a word greater than lucky,</p>
+        <p>I still don't think it would be enough to explain what you are to me.</p>
+        <div class="letter-sig">
+          <p>Always yours,<br>Justine, aka Tencha :3</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // 🎵 MUSIC PLAYER LOGIC
+    // ==========================================
+    const bgMusic = document.getElementById("bgMusic");
+    const musicBtn = document.getElementById("musicBtn");
+    const musicStatus = document.getElementById("musicStatus");
+
+    function toggleMusic() {
+      if (bgMusic.paused) {
+        bgMusic.play();
+        musicBtn.innerText = "⏸️";
+        musicStatus.innerText = "Playing ♪";
+      } else {
+        bgMusic.pause();
+        musicBtn.innerText = "🎵";
+        musicStatus.innerText = "Play Music";
+      }
+    }
+
+    // Auto-play music on the first click anywhere on the page
+    document.body.addEventListener('click', function() {
+      if (bgMusic.paused) {
+        bgMusic.play().then(() => {
+          musicBtn.innerText = "⏸️";
+          musicStatus.innerText = "Playing ♪";
+        }).catch(() => {});
+      }
+    }, { once: true });
+
+    // ==========================================
+    // ⚙️ TIMER SETTINGS & TESTING SWITCH
+    // ==========================================
+    
+    // Set to 'true' to test the birthday unlock right now!
+    // Set to 'false' when you are ready to publish it for July 29th.
+    const TEST_MODE = false;
+
+    // Target Date: July 29, 2026 at Midnight
+    const targetDate = new Date("July 29, 2026 00:00:00").getTime();
+    let isBirthday = false;
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const difference = targetDate - now;
+
+      const timerContainer = document.getElementById("countdownTimer");
+      const surpriseBtn = document.getElementById("surpriseBtn");
+      const mailEnvelope = document.getElementById("mailEnvelope");
+
+      if (TEST_MODE || difference <= 0) {
+        isBirthday = true;
+        clearInterval(countdownInterval);
+
+        timerContainer.innerHTML = "<h2 style='color:#d63384; margin: 0.5rem 0;'>It's Your Special Day! 🎉</h2>";
+        surpriseBtn.classList.add("unlocked");
+        mailEnvelope.classList.add("revealed");
+      } else {
+        isBirthday = false;
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+        document.getElementById("days").innerText = days < 10 ? "0" + days : days;
+        document.getElementById("hours").innerText = hours < 10 ? "0" + hours : hours;
+        document.getElementById("minutes").innerText = minutes < 10 ? "0" + minutes : minutes;
+        document.getElementById("seconds").innerText = seconds < 10 ? "0" + seconds : seconds;
+
+        mailEnvelope.classList.remove("revealed");
+        surpriseBtn.classList.remove("unlocked");
+      }
+    }
+
+    const countdownInterval = setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // --- SURPRISE & MODAL LOGIC ---
+    const modal = document.getElementById("letterModal");
+
+    function trySurprise() {
+      if (isBirthday) {
+        openLetter();
+      } else {
+        alert('Oops Not Yet! Patience... something special is coming real soon! :P');
+      }
+    }
+
+    function openLetter() { if(isBirthday) modal.classList.add("open"); }
+    function closeLetter() { modal.classList.remove("open"); }
+
+    // --- 26-CAROUSEL LOGIC ---
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.carousel-slide');
+    const counter = document.getElementById('photoCounter');
+
+    function showSlide(index) {
+      slides.forEach(slide => slide.classList.remove('active'));
+      if (index >= slides.length) { currentSlide = 0; }
+      else if (index < 0) { currentSlide = slides.length - 1; }
+      else { currentSlide = index; }
+
+      slides[currentSlide].classList.add('active');
+      counter.innerText = (currentSlide + 1) + " / " + slides.length;
+    }
+
+    function changeSlide(direction) { showSlide(currentSlide + direction); }
+  </script>
+
+</body>
+</html>
