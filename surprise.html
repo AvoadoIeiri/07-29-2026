@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>A Special Day for Rairai!</title>
+  <title>Your Birthday Countdown Starts Now!</title>
   <style>
     /* Global Styles */
     body {
@@ -337,9 +337,10 @@
     .letter-content {
       background: #fffafa; border: 3px solid #ffb6c1;
       padding: 2rem; border-radius: 15px;
-      max-width: 80%; max-height: 80vh; overflow-y: auto;
+      max-width: 500px; width: 85%; max-height: 80vh; overflow-y: auto;
       box-shadow: 0 10px 40px rgba(0,0,0,0.2); position: relative;
       font-family: 'Georgia', serif;
+      box-sizing: border-box;
     }
 
     .close-letter {
@@ -350,6 +351,55 @@
 
     .letter-text { line-height: 1.8; color: #444; font-size: 1rem; text-align: left; }
     .letter-sig { text-align: right; margin-top: 1rem; color: #d63384; }
+
+    /* MULTI-PAGE MAIL CONTROLS & IMAGES */
+    .mail-page {
+      display: none;
+    }
+    .mail-page.active {
+      display: block;
+    }
+
+    .mail-image {
+      width: 100%;
+      max-height: 250px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin: 12px 0;
+      border: 1px solid #ffccd5;
+    }
+
+    .mail-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.5rem;
+      padding-top: 10px;
+      border-top: 1px dashed #ffb6c1;
+    }
+
+    .mail-nav-btn {
+      background-color: #d63384;
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background-color 0.2s, transform 0.2s;
+    }
+
+    .mail-nav-btn:hover {
+      background-color: #b8256f;
+      transform: scale(1.03);
+    }
+
+    .mail-page-num {
+      font-size: 0.8rem;
+      color: #888;
+      font-weight: bold;
+    }
 
     /* Responsive adjustments for mobile screens */
     @media (max-width: 900px) {
@@ -483,24 +533,71 @@
 
   </div>
 
-  <!-- LOVE LETTER MODAL -->
+  <!-- LOVE LETTER MODAL (3-PAGE NAVIGATION) -->
   <div class="letter-modal" id="letterModal">
     <div class="letter-content">
       <span class="close-letter" onclick="closeLetter()">&times;</span>
+      
       <div class="letter-text">
-        <p>My Dearest Rairai,</p>
-        <p>First of all, Happy Birthday!</p>
-        <p>Out of all the people in this world has created,</p>
-        <p>With all the different roads I could have taken and lived,</p>
-        <p>Some Miracle allowed My Story to cross path with Yours ,</p>
-        <p>And if I spend the rest of my life searching for a word greater than lucky,</p>
-        <p>I still don't think it would be enough to explain what you are to me.</p>
-        <p>(Also you may use this as your ticket to eat what you want</p>
-        <p>Just show this to me and tell me what you want :P)</p>
-        <div class="letter-sig">
-          <p>Always yours,<br>Justine, aka Tencha :3</p>
+        
+        <!-- PAGE 1: Original Letter -->
+        <div class="mail-page active" id="mailPage1">
+          <p>My Dearest Rairai,</p>
+          <p>First of all, Happy Birthday!</p>
+          <p>Out of all the people in this world has created,</p>
+          <p>With all the different roads I could have taken and lived,</p>
+          <p>Some Miracle allowed My Story to cross path with Yours,</p>
+          <p>And if I spend the rest of my life searching for a word greater than lucky,</p>
+          <p>I still don't think it would be enough to explain what you are to me.</p>
+          <p>(Also you may use this as your ticket to eat what you want</p>
+          <p>Just show this to me and tell me what you want :P)</p>
+          <div class="letter-sig">
+            <p>Always yours,<br>Justine, aka Tencha :3</p>
+          </div>
         </div>
+
+        <!-- PAGE 2: Second Message + Photo -->
+        <div class="mail-page" id="mailPage2">
+          <p>Dear Babi,</p>
+          <p>I wish to thank you for everything you've done</p>
+          <p>Heaven knows how appreciative I am to everything you've given/done for me</p>
+          <p>I will always love You</p>
+          <p>"You're my backbone</p>
+          <p>You're my cornerstone</p>
+          <p>You're my crutch when my legs stop moving</p>
+          <p>You're my head start</p>
+          <p>You're my rugged heart</p>
+          <p>You're the pulse that I've always needed."</p>
+          
+          <!-- Image slot for Page 2 -->
+          <img src="mail-photo2.jpg" alt="Special Memory" class="mail-image">
+
+          <p>Thank you for all the laughs, smiles, and sweet moments we've shared together 💕</p>
+        </div>
+
+        <!-- PAGE 3: Final Custom Photo Page -->
+        <div class="mail-page" id="mailPage3">
+          <p>And last but not least...</p>
+          <p>This is one of my favorite picture of us</p>
+          <p>Because this single photo includes my entire family</p>
+          
+          <!-- Image slot for Page 3 (Your Choice) -->
+          <img src="mail-photo3.jpg" alt="Final Picture Choice" class="mail-image">
+
+          <p style="text-align: center; color: #d63384; font-weight: bold; margin-top: 1rem;">
+            Happy Birthday once again, my favorite person! ❤️
+          </p>
+        </div>
+
       </div>
+
+      <!-- MAIL NAVIGATION BUTTONS -->
+      <div class="mail-nav">
+        <button class="mail-nav-btn" id="mailPrevBtn" onclick="changeMailPage(-1)" style="visibility: hidden;">&laquo; Previous</button>
+        <span class="mail-page-num" id="mailPageNum">Page 1 of 3</span>
+        <button class="mail-nav-btn" id="mailNextBtn" onclick="changeMailPage(1)">Next &raquo;</button>
+      </div>
+
     </div>
   </div>
 
@@ -615,8 +712,57 @@
       }
     }
 
-    function openLetter() { if(isBirthday) modal.classList.add("open"); }
+    function openLetter() { 
+      if(isBirthday) {
+        modal.classList.add("open"); 
+        currentMailPage = 1;
+        updateMailPage();
+      }
+    }
+    
     function closeLetter() { modal.classList.remove("open"); }
+
+    // --- MULTI-PAGE MAIL SYSTEM LOGIC ---
+    let currentMailPage = 1;
+    const totalMailPages = 3;
+
+    function updateMailPage() {
+      for (let i = 1; i <= totalMailPages; i++) {
+        const page = document.getElementById(`mailPage${i}`);
+        if (i === currentMailPage) {
+          page.classList.add("active");
+        } else {
+          page.classList.remove("active");
+        }
+      }
+
+      // Update Navigation Buttons & Page Text
+      document.getElementById("mailPageNum").innerText = `Page ${currentMailPage} of ${totalMailPages}`;
+      
+      const prevBtn = document.getElementById("mailPrevBtn");
+      const nextBtn = document.getElementById("mailNextBtn");
+
+      prevBtn.style.visibility = (currentMailPage === 1) ? "hidden" : "visible";
+      
+      if (currentMailPage === totalMailPages) {
+        nextBtn.innerText = "Close 💌";
+      } else {
+        nextBtn.innerText = "Next \u00BB";
+      }
+    }
+
+    function changeMailPage(direction) {
+      if (currentMailPage === totalMailPages && direction === 1) {
+        closeLetter();
+        return;
+      }
+      
+      currentMailPage += direction;
+      if (currentMailPage < 1) currentMailPage = 1;
+      if (currentMailPage > totalMailPages) currentMailPage = totalMailPages;
+      
+      updateMailPage();
+    }
 
     // --- 26-CAROUSEL LOGIC ---
     let currentSlide = 0;
