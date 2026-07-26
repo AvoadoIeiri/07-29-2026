@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Birthday Countdown Starts Now!</title>
+  <style>
+    /* Global Styles */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #ffe6e6, #f7d6e0);
+      color: #4a4a4a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* WELCOME OVERLAY SCREEN */
+    .welcome-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #ffe6e6, #f7d6e0);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+      text-align: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .welcome-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .welcome-card {
+      background: white;
+      padding: 2.5rem 2rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .welcome-title {
+      color: #d63384;
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .welcome-subtitle {
+      color: #666;
+      font-size: 0.95rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .start-btn {
+      background-color: #d63384;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: bold;
+      padding: 14px 28px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(214, 51, 132, 0.4);
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    .start-btn:hover {
+      background-color: #b8256f;
+      transform: scale(1.05);
+    }
+
+    /* Main Container to hold GIFs and Card side-by-side on desktop */
+    .page-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 30px;
+      width: 100%;
+      max-width: 1200px;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    /* Left & Right GIF Slots */
+    .side-gif {
+      width: 250px;
+      height: 250px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .side-gif img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .card {
+      background: white;
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+      margin: 20px 0;
+    }
+
+    h1 {
+      color: #d63384;
+      font-size: 1.9rem;
+      margin-bottom: 0.2rem;
+      transition: all 0.3s ease;
+    }
+
+    .heart { color: #e63946; font-size: 1.5rem; }
+
+    /* Floating Music Player Styling */
+    .music-player {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 8px 16px;
+      border-radius: 25px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 999;
+      border: 1px solid #ffb6c1;
+    }
+
+    .music-btn {
+      background: #d63384;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      transition: transform 0.2s;
+    }
+
+    .music-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .music-text {
+      font-size: 0.8rem;
+      color: #d63384;
+      font-weight: bold;
+    }
+
+    /* Countdown Timer Styling */
+    .timer-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 1.2rem 0;
+    }
+
+    .timer-box {
+      background: #fff0f5;
+      border: 1px solid #ffb6c1;
+      border-radius: 10px;
+      padding: 8px 10px;
+      min-width: 50px;
+    }
+
+    .timer-number { font-size: 1.3rem; font-weight: bold; color: #d63384; }
+    .timer-label { font-size: 0.7rem; color: #777; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* Carousel Cover (Concealed State) */
+    .carousel-cover {
+      width: 100%;
+      height: 300px;
+      border-radius: 15px;
+      background: #fff0f5;
+      border: 2px dashed #ffb6c1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 1rem;
+      box-sizing: border-box;
+      padding: 20px;
+    }
+
+    .carousel-cover p {
+      color: #d63384;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      font-size: 1.05rem;
+    }
+
+    .reveal-carousel-btn {
+      background-color: #d63384;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(214, 51, 132, 0.3);
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .reveal-carousel-btn:hover {
+      background-color: #b8256f;
+      transform: scale(1.05);
+    }
+
+    /* Photo Carousel Slider */
+    .carousel-container {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      border-radius: 15px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      background-color: #f8f9fa;
+      display: none; /* Concealed by default */
+    }
+
+    .carousel-slide { display: none; width: 100%; height: 100%; }
+    .carousel-slide.active { display: block; }
+    .carousel-slide img { width: 100%; height: 100%; object-fit: cover; }
+
+    .prev, .next {
+      cursor: pointer; position: absolute; top: 50%; transform: translateY(-50%);
+      padding: 10px 14px; color: white; font-weight: bold; font-size: 16px;
+      border-radius: 50%; background-color: rgba(0,0,0,0.4); border: none;
+      transition: background-color 0.2s;
+    }
+    .prev:hover, .next:hover { background-color: rgba(0,0,0,0.7); }
+    .prev { left: 10px; } .next { right: 10px; }
+
+    .caption {
+      position: absolute; bottom: 0; width: 100%;
+      background: rgba(0, 0, 0, 0.5); color: white; padding: 8px 0; font-size: 0.85rem;
+    }
+
+    .photo-counter {
+      position: absolute; top: 10px; right: 10px;
+      background: rgba(0,0,0,0.5); color: white;
+      padding: 4px 10px; border-radius: 12px; font-size: 0.75rem;
+    }
+
+    p.message { line-height: 1.6; font-size: 1rem; color: #333; }
+
+    /* The Reveal Button */
+    .button {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 12px 24px;
+      background-color: #d63384;
+      color: white;
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: bold;
+      border: none;
+      opacity: 0.5;
+      cursor: not-allowed;
+      transition: all 0.3s ease;
+    }
+
+    .button.unlocked {
+      opacity: 1;
+      cursor: pointer;
+    }
+    .button.unlocked:hover {
+      background-color: #b8256f;
+      transform: scale(1.05);
+    }
+
+    /* Mail Slide-In Styling */
+    .mail-container {
+      margin-top: 1.2rem;
+      opacity: 0;
+      display: none;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    @keyframes slideInMail {
+      0% { transform: translateX(-150%) rotate(-10deg); opacity: 0; }
+      100% { transform: translateX(0) rotate(0deg); opacity: 1; }
+    }
+
+    .mail-container.revealed {
+      display: block;
+      animation: slideInMail 1s ease-out forwards;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+
+    .envelope {
+      width: 55px; height: 38px; fill: #ffb6c1; stroke: #d63384;
+      stroke-width: 2px; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.1));
+      transition: transform 0.2s ease;
+    }
+    .mail-container:hover .envelope { transform: scale(1.1) translateY(-3px); }
+
+    /* Modal Letter Styling */
+    .letter-modal {
+      display: none; position: fixed; z-index: 1000;
+      left: 0; top: 0; width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.6);
+      justify-content: center; align-items: center;
+      opacity: 0; transition: opacity 0.4s ease;
+    }
+    .letter-modal.open { display: flex; opacity: 1; }
+
+    .letter-content {
+      background: #fffafa; border: 3px solid #ffb6c1;
+      padding: 2rem; border-radius: 15px;
+      max-width: 500px; width: 85%; max-height: 80vh; overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2); position: relative;
+      font-family: 'Georgia', serif;
+      box-sizing: border-box;
+    }
+
+    .close-letter {
+      position: absolute; top: 10px; right: 15px;
+      font-size: 1.8rem; font-weight: bold; color: #777; cursor: pointer;
+    }
+    .close-letter:hover { color: #d63384; }
+
+    .letter-text { line-height: 1.8; color: #444; font-size: 1rem; text-align: left; }
+    .letter-sig { text-align: right; margin-top: 1rem; color: #d63384; }
+
+    /* MULTI-PAGE MAIL CONTROLS & IMAGES */
+    .mail-page {
+      display: none;
+    }
+    .mail-page.active {
+      display: block;
+    }
+
+    .mail-image {
+      width: 100%;
+      max-height: 250px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin: 12px 0;
+      border: 1px solid #ffccd5;
+    }
+
+    .mail-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.5rem;
+      padding-top: 10px;
+      border-top: 1px dashed #ffb6c1;
+    }
+
+    .mail-nav-btn {
+      background-color: #d63384;
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background-color 0.2s, transform 0.2s;
+    }
+
+    .mail-nav-btn:hover {
+      background-color: #b8256f;
+      transform: scale(1.03);
+    }
+
+    .mail-page-num {
+      font-size: 0.8rem;
+      color: #888;
+      font-weight: bold;
+    }
+
+    /* ==========================================
+       📌 SECRET SIDE NOTE STYLING
+       ========================================== */
+    .secret-note-tab {
+      position: fixed;
+      right: -200px; /* COMPLETELY HIDDEN off-screen until letter closes */
+      top: 45%;
+      width: 150px;
+      height: 100px;
+      background: linear-gradient(135deg, #fff9c4, #fff59d);
+      border-left: 4px solid #fbc02d;
+      border-radius: 12px 0 0 12px;
+      box-shadow: -4px 6px 15px rgba(0,0,0,0.15);
+      cursor: pointer;
+      z-index: 1001;
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      box-sizing: border-box;
+      transition: right 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.2s;
+      transform: rotate(-3deg);
+    }
+
+    /* Active state when it slides out to peek */
+    .secret-note-tab.peek {
+      right: -105px; /* Slides out from edge */
+    }
+
+    .secret-note-tab:hover {
+      right: -90px; /* Slight bounce when hovered */
+      transform: rotate(0deg) scale(1.05);
+    }
+
+    .secret-tab-text {
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: #d81b60;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      letter-spacing: 1px;
+    }
+
+    /* FULL CENTER SECRET NOTE MODAL */
+    .secret-modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .secret-modal.open {
+      display: flex;
+      opacity: 1;
+    }
+
+    .secret-modal-content {
+      background: #fffde7;
+      border: 2px dashed #fbc02d;
+      padding: 2rem;
+      border-radius: 15px;
+      max-width: 400px;
+      width: 85%;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+      position: relative;
+      font-family: 'Comic Sans MS', 'Chalkboard SE', 'Georgia', cursive;
+      text-align: center;
+      transform: rotate(-1deg);
+    }
+
+    .close-secret {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: #888;
+      cursor: pointer;
+    }
+
+    .close-secret:hover { color: #d63384; }
+
+    .secret-modal-text {
+      color: #444;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
+    /* Responsive adjustments for mobile screens */
+    @media (max-width: 900px) {
+      .page-wrapper {
+        flex-direction: column;
+      }
+      .side-gif {
+        width: 180px;
+        height: 180px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- WELCOME OVERLAY SCREEN -->
+  <div class="welcome-overlay" id="welcomeOverlay">
+    <div class="welcome-card">
+      <div class="welcome-title">Hey there Tsukirai! 💕</div>
+      <div class="welcome-subtitle">You found my surprise for you!</div>
+      <button class="start-btn" onclick="startExperience()">Reveal</button>
+    </div>
+  </div>
+
+  <!-- FLOATING MUSIC PLAYER -->
+  <div class="music-player">
+    <button class="music-btn" id="musicBtn" onclick="toggleMusic()">🎵</button>
+    <span class="music-text" id="musicStatus">Play Music</span>
+  </div>
+
+  <!-- AUDIO ELEMENT -->
+  <audio id="bgMusic" loop>
+    <source src="song.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <!-- PAGE WRAPPER FOR SIDE GIFS AND CARD -->
+  <div class="page-wrapper">
+    
+    <!-- LEFT GIF SLOT -->
+    <div class="side-gif">
+      <img src="left-gif.gif" alt="Left GIF">
+    </div>
+
+    <!-- MAIN CARD -->
+    <div class="card">
+      <h1 id="birthdayHeader">Your Birthday Counter Starts Now! <span class="heart">❤️</span></h1>
+
+      <!-- Countdown Timer -->
+      <div class="timer-container" id="countdownTimer">
+        <div class="timer-box">
+          <div class="timer-number" id="days">00</div>
+          <div class="timer-label">Days</div>
+        </div>
+        <div class="timer-box">
+          <div class="timer-number" id="hours">00</div>
+          <div class="timer-label">Hours</div>
+        </div>
+        <div class="timer-box">
+          <div class="timer-number" id="minutes">00</div>
+          <div class="timer-label">Mins</div>
+        </div>
+        <div class="timer-box">
+          <div class="timer-number" id="seconds">00</div>
+          <div class="timer-label">Secs</div>
+        </div>
+      </div>
+
+      <!-- CAROUSEL COVER (CONCEALED PLACEHOLDER) -->
+      <div class="carousel-cover" id="carouselCover">
+        <p>A little collection of our memories together 📸</p>
+        <button class="reveal-carousel-btn" onclick="revealCarousel()">Click to Reveal Memories ✨</button>
+      </div>
+
+      <!-- 26-Photo Carousel (HIDDEN INITIALLY) -->
+      <div class="carousel-container" id="carouselContainer">
+        <div class="photo-counter" id="photoCounter">1 / 26</div>
+
+        <!-- Photos 1 to 26 -->
+        <div class="carousel-slide active"><img src="photo1.jpg" alt="1"><div class="caption">Double Thumbs up moment natin sa MOA HAHAHA</div></div>
+        <div class="carousel-slide"><img src="photo2.jpg" alt="2"><div class="caption">Eyy pose daw para di halatang pagod na</div></div>
+        <div class="carousel-slide"><img src="photo3.jpg" alt="3"><div class="caption">peke smile niya kasi di nadaw nabili dried mango niya HAHAHAHA</div></div>
+        <div class="carousel-slide"><img src="photo4.jpg" alt="4"><div class="caption">Peace sign bago sumigaw</div></div>
+        <div class="carousel-slide"><img src="photo5.jpg" alt="5"><div class="caption">Nag Zagu after niya umiyak sa rides HAHAHA T _ T</div></div>
+        <div class="carousel-slide"><img src="photo6.jpg" alt="6"><div class="caption">Umiyak man at least may Matcha daw siya eyy</div></div>
+        <div class="carousel-slide"><img src="photo7.jpg" alt="7"><div class="caption">Nakangiti kami niyan pero gigil na kami kay ate tagal mag papasok</div></div>
+        <div class="carousel-slide"><img src="photo8.jpg" alt="8"><div class="caption">Heart pose daw kasi wala na siyang maisip HAHAHA</div></div>
+        <div class="carousel-slide"><img src="photo9.jpg" alt="9"><div class="caption">Sungit effect siya kasi wala pang pagkain</div></div>
+        <div class="carousel-slide"><img src="photo10.jpg" alt="10"><div class="caption">Wala sinabihan kong "kakain" e HAHAHA</div></div>
+        <div class="carousel-slide"><img src="photo11.jpg" alt="11"><div class="caption">Kunwari may tinitignan ako pero gusto lang lumapit :3</div></div>
+        <div class="carousel-slide"><img src="photo12.jpg" alt="12"><div class="caption">Luh makatingin oh crush mo?</div></div>
+        <div class="carousel-slide"><img src="photo13.jpg" alt="13"><div class="caption">Uy hala! may bata po!</div></div>
+        <div class="carousel-slide"><img src="photo14.jpg" alt="14"><div class="caption">Nasa dagat na sila</div></div>
+        <div class="carousel-slide"><img src="photo15.jpg" alt="15"><div class="caption">Picture kahit nababagot na sa haba ng pila :))</div></div>
+        <div class="carousel-slide"><img src="photo16.jpg" alt="16"><div class="caption">Eyy first picture sa iphone fully snatched.. eme</div></div>
+        <div class="carousel-slide"><img src="photo17.jpg" alt="17"><div class="caption">Hala nag rewind yung pic, miss ko na kasi dito.. kain tayo ulit next time :3</div></div>
+        <div class="carousel-slide"><img src="photo18.jpg" alt="18"><div class="caption">Swimming sila niyan tas nabusog sa uncle john's</div></div>
+        <div class="carousel-slide"><img src="photo19.jpg" alt="19"><div class="caption">Mood swings beh kanina uncle john's ngayon popeye's</div></div>
+        <div class="carousel-slide"><img src="photo20.jpg" alt="20"><div class="caption">Kunwari kita mukha ko ha? HAHAHAHA T _ T</div></div>
+        <div class="carousel-slide"><img src="photo21.jpg" alt="21"><div class="caption">Ayan kita na, pero icl cute natin dito :3</div></div>
+        <div class="carousel-slide"><img src="photo22.jpg" alt="22"><div class="caption">Aww first ride niya bago umiyak sa disk ride T _ T</div></div>
+        <div class="carousel-slide"><img src="photo23.jpg" alt="23"><div class="caption">Moments before Disaster XD</div></div>
+        <div class="carousel-slide"><img src="photo24.jpg" alt="24"><div class="caption">Kamiss ditoo kahit ang pangit ng service nila HAHAHAHA</div></div>
+        <div class="carousel-slide"><img src="photo25.jpg" alt="25"><div class="caption">Eto yung moment na nahilo ako kasi binangga mo ako ng sobrang lakas HAHAHAHA</div></div>
+        <div class="carousel-slide"><img src="photo26.jpg" alt="26"><div class="caption">Aww look at my pretty baby napaka cutie &lt;3</div></div>
+
+        <button class="prev" onclick="changeSlide(-1)">&#10094;</button>
+        <button class="next" onclick="changeSlide(1)">&#10095;</button>
+      </div>
+
+      <p class="message">
+        I've been really busy lately, but in my spare time I went and tried my best making this website for you! I hope you like it :3
+      </p>
+
+      <!-- The Pink Mail Envelope -->
+      <div class="mail-container" id="mailEnvelope" onclick="openLetter()">
+        <svg class="envelope" viewBox="0 0 24 16" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22 0H2C0.9 0 0 0.9 0 2V14C0 15.1 0.9 16 2 16H22C23.1 16 24 15.1 24 14V2C24 0.9 23.1 0 22 0ZM20.6 2L12 7.1L3.4 2H20.6ZM2 14V3.8L12 9.7L22 3.8V14H2Z"/>
+        </svg>
+        <div style="font-size: 0.8rem; color:#d63384;">Open your message</div>
+      </div>
+
+      <!-- Surprise Button -->
+      <button class="button" id="surpriseBtn" onclick="trySurprise()">Reveal</button>
+    </div>
+
+    <!-- RIGHT GIF SLOT -->
+    <div class="side-gif">
+      <img src="right-gif.gif" alt="Right GIF">
+    </div>
+
+  </div>
+
+  <!-- LOVE LETTER MODAL (3-PAGE NAVIGATION) -->
+  <div class="letter-modal" id="letterModal">
+    <div class="letter-content">
+      <span class="close-letter" onclick="closeLetter()">&times;</span>
+      
+      <div class="letter-text">
+        
+        <!-- PAGE 1: Original Letter -->
+        <div class="mail-page active" id="mailPage1">
+          <p>My Dearest Rairai,</p>
+          <p>First of all, Happy Birthday!</p>
+          <p>Out of all the people in this world has created,</p>
+          <p>With all the different roads I could have taken and lived,</p>
+          <p>Some Miracle allowed My Story to cross path with Yours,</p>
+          <p>And if I spend the rest of my life searching for a word greater than lucky,</p>
+          <p>I still don't think it would be enough to explain what you are to me.</p>
+          <p>(Also you may use this as your ticket to eat what you want</p>
+          <p>Just show this to me and tell me what you want :P)</p>
+          <div class="letter-sig">
+            <p>Always yours,<br>Justine, aka Tencha :3</p>
+          </div>
+        </div>
+
+        <!-- PAGE 2: Second Message + Photo -->
+        <div class="mail-page" id="mailPage2">
+          <p>Dear Babi,</p>
+          <p>I wish to thank you for everything you've done</p>
+          <p>Heaven knows how appreciative I am to everything you've given/done for me</p>
+          <p>I will always love You</p>
+          <p>"You're my backbone</p>
+          <p>You're my cornerstone</p>
+          <p>You're my crutch when my legs stop moving</p>
+          <p>You're my head start</p>
+          <p>You're my rugged heart</p>
+          <p>You're the pulse that I've always needed."</p>
+          
+          <!-- Image slot for Page 2 -->
+          <img src="mail-photo2.jpg" alt="Special Memory" class="mail-image">
+
+          <p>Thank you for all the laughs, smiles, and sweet moments we've shared together 💕</p>
+        </div>
+
+        <!-- PAGE 3: Final Custom Photo Page -->
+        <div class="mail-page" id="mailPage3">
+          <p>And last but not least...</p>
+          <p>This is one of my favorite picture of us</p>
+          <p>Because this single photo includes my entire family</p>
+          
+          <!-- Image slot for Page 3 (Your Choice) -->
+          <img src="mail-photo3.jpg" alt="Final Picture Choice" class="mail-image">
+
+          <p style="text-align: center; color: #d63384; font-weight: bold; margin-top: 1rem;">
+            Happy Birthday once again, my favorite person! ❤️
+          </p>
+        </div>
+
+      </div>
+
+      <!-- MAIL NAVIGATION BUTTONS -->
+      <div class="mail-nav">
+        <button class="mail-nav-btn" id="mailPrevBtn" onclick="changeMailPage(-1)" style="visibility: hidden;">&laquo; Previous</button>
+        <span class="mail-page-num" id="mailPageNum">Page 1 of 3</span>
+        <button class="mail-nav-btn" id="mailNextBtn" onclick="changeMailPage(1)">Next &raquo;</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 📌 SECRET NOTE SIDE TAB (Hidden off-screen until triggered) -->
+  <div class="secret-note-tab" id="secretNoteTab" onclick="openSecretModal()">
+    <span class="secret-tab-text">P.S. 📌</span>
+  </div>
+
+  <!-- 📌 SECRET NOTE FULL MODAL -->
+  <div class="secret-modal" id="secretModal">
+    <div class="secret-modal-content">
+      <span class="close-secret" onclick="closeSecretModal()">&times;</span>
+      <h3 style="color: #d63384; margin-top: 0;">One last secret note for you</h3>
+      <div class="secret-modal-text">
+        <p>P.S.</p>
+        <p>I love you so much, and I hope this small website made your special day even brighter even by a little</p>
+        <p>I know sooner or later we'll be away from each other, by that i mean breaking up</p>
+        <p>I'm not the type of person you'll love/like once you know my true nature</p>
+        <p>I'm not really asking for forgiveness because I know that I really am a terrible person</p>
+        <p>But I do hope that you'll always be happy, safe, and successful</p>
+        <p>I will always love you</p>
+        <p>Also don't forget you still have your "Treat Ticket" There is no expiration date so.. don't forget it :P</p>
+        <p> </p>
+        <p> Yours truly, Tencha Ieiri </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // 🎵 MUSIC PLAYER & OVERLAY UNLOCK LOGIC
+    // ==========================================
+    const bgMusic = document.getElementById("bgMusic");
+    const musicBtn = document.getElementById("musicBtn");
+    const musicStatus = document.getElementById("musicStatus");
+
+    function startExperience() {
+      // Hide welcome overlay
+      document.getElementById("welcomeOverlay").classList.add("hidden");
+      
+      // Play music directly on tap
+      bgMusic.play().then(() => {
+        musicBtn.innerText = "⏸️";
+        musicStatus.innerText = "Playing ♪";
+      }).catch(err => {
+        console.log("Audio play error: ", err);
+      });
+    }
+
+    function toggleMusic() {
+      if (bgMusic.paused) {
+        bgMusic.play();
+        musicBtn.innerText = "⏸️";
+        musicStatus.innerText = "Playing ♪";
+      } else {
+        bgMusic.pause();
+        musicBtn.innerText = "🎵";
+        musicStatus.innerText = "Play Music";
+      }
+    }
+
+    // ==========================================
+    // 🔒 PASSWORD CHECK & CAROUSEL REVEAL LOGIC
+    // ==========================================
+    function revealCarousel() {
+      const input = prompt("Enter the special passcode to unlock memories 💕:");
+      if (input === "06262020") {
+        document.getElementById("carouselCover").style.display = "none";
+        document.getElementById("carouselContainer").style.display = "block";
+      } else if (input !== null) {
+        alert("Oops! Wrong password! Try again :P");
+      }
+    }
+
+    // ==========================================
+    // ⚙️ TIMER SETTINGS & TESTING SWITCH
+    // ==========================================
+    
+    // Set to 'true' to test the birthday unlock right now!
+    // Set to 'false' when you are ready to publish it for July 29th.
+    const TEST_MODE = true;
+
+    // Target Date: July 29, 2026 at Midnight
+    const targetDate = new Date("July 29, 2026 00:00:00").getTime();
+    let isBirthday = false;
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const difference = targetDate - now;
+
+      const timerContainer = document.getElementById("countdownTimer");
+      const surpriseBtn = document.getElementById("surpriseBtn");
+      const mailEnvelope = document.getElementById("mailEnvelope");
+      const birthdayHeader = document.getElementById("birthdayHeader");
+
+      if (TEST_MODE || difference <= 0) {
+        isBirthday = true;
+        clearInterval(countdownInterval);
+
+        // Update Header & Container when timer hits 0
+        birthdayHeader.innerHTML = 'Happy Birthday! <span class="heart">❤️</span>';
+        timerContainer.innerHTML = "<h2 style='color:#d63384; margin: 0.5rem 0;'>It's Your Special Day! 🎉</h2>";
+        surpriseBtn.classList.add("unlocked");
+        mailEnvelope.classList.add("revealed");
+      } else {
+        isBirthday = false;
+        
+        // Initial Header Text before timer finishes
+        birthdayHeader.innerHTML = 'Your Birthday Counter Starts Now! <span class="heart">❤️</span>';
+
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+        document.getElementById("days").innerText = days < 10 ? "0" + days : days;
+        document.getElementById("hours").innerText = hours < 10 ? "0" + hours : hours;
+        document.getElementById("minutes").innerText = minutes < 10 ? "0" + minutes : minutes;
+        document.getElementById("seconds").innerText = seconds < 10 ? "0" + seconds : seconds;
+
+        mailEnvelope.classList.remove("revealed");
+        surpriseBtn.classList.remove("unlocked");
+      }
+    }
+
+    const countdownInterval = setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // --- SURPRISE & MODAL LOGIC ---
+    const modal = document.getElementById("letterModal");
+
+    function trySurprise() {
+      if (isBirthday) {
+        openLetter();
+      } else {
+        alert('Oops Not Yet! Patience... something special is coming real soon! :P');
+      }
+    }
+
+    function openLetter() { 
+      if(isBirthday) {
+        modal.classList.add("open"); 
+        currentMailPage = 1;
+        updateMailPage();
+      }
+    }
+    
+    function closeLetter() { 
+      modal.classList.remove("open"); 
+      // ONLY trigger the secret tab if it's actually birthday time/unlocked!
+      if (isBirthday) {
+        showSecretTab();
+      }
+    }
+
+    // --- MULTI-PAGE MAIL SYSTEM LOGIC ---
+    let currentMailPage = 1;
+    const totalMailPages = 3;
+
+    function updateMailPage() {
+      for (let i = 1; i <= totalMailPages; i++) {
+        const page = document.getElementById(`mailPage${i}`);
+        if (i === currentMailPage) {
+          page.classList.add("active");
+        } else {
+          page.classList.remove("active");
+        }
+      }
+
+      // Update Navigation Buttons & Page Text
+      document.getElementById("mailPageNum").innerText = `Page ${currentMailPage} of ${totalMailPages}`;
+      
+      const prevBtn = document.getElementById("mailPrevBtn");
+      const nextBtn = document.getElementById("mailNextBtn");
+
+      prevBtn.style.visibility = (currentMailPage === 1) ? "hidden" : "visible";
+      
+      if (currentMailPage === totalMailPages) {
+        nextBtn.innerText = "Close 💌";
+      } else {
+        nextBtn.innerText = "Next \u00BB";
+      }
+    }
+
+    function changeMailPage(direction) {
+      if (currentMailPage === totalMailPages && direction === 1) {
+        closeLetter();
+        return;
+      }
+      
+      currentMailPage += direction;
+      if (currentMailPage < 1) currentMailPage = 1;
+      if (currentMailPage > totalMailPages) currentMailPage = totalMailPages;
+      
+      updateMailPage();
+    }
+
+    // --- 📌 SECRET NOTE TAB & MODAL LOGIC ---
+    function showSecretTab() {
+      const tab = document.getElementById("secretNoteTab");
+      tab.classList.add("peek");
+    }
+
+    function openSecretModal() {
+      const secretModal = document.getElementById("secretModal");
+      secretModal.classList.add("open");
+    }
+
+    function closeSecretModal() {
+      const secretModal = document.getElementById("secretModal");
+      secretModal.classList.remove("open");
+    }
+
+    // --- 26-CAROUSEL LOGIC ---
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.carousel-slide');
+    const counter = document.getElementById('photoCounter');
+
+    function showSlide(index) {
+      slides.forEach(slide => slide.classList.remove('active'));
+      if (index >= slides.length) { currentSlide = 0; }
+      else if (index < 0) { currentSlide = slides.length - 1; }
+      else { currentSlide = index; }
+
+      slides[currentSlide].classList.add('active');
+      counter.innerText = (currentSlide + 1) + " / " + slides.length;
+    }
+
+    function changeSlide(direction) { showSlide(currentSlide + direction); }
+  </script>
+
+</body>
+</html>
