@@ -401,6 +401,101 @@
       font-weight: bold;
     }
 
+    /* ==========================================
+       📌 SECRET SIDE NOTE STYLING
+       ========================================== */
+    .secret-note-tab {
+      position: fixed;
+      right: -200px; /* COMPLETELY HIDDEN off-screen until letter closes */
+      top: 45%;
+      width: 150px;
+      height: 100px;
+      background: linear-gradient(135deg, #fff9c4, #fff59d);
+      border-left: 4px solid #fbc02d;
+      border-radius: 12px 0 0 12px;
+      box-shadow: -4px 6px 15px rgba(0,0,0,0.15);
+      cursor: pointer;
+      z-index: 1001;
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      box-sizing: border-box;
+      transition: right 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.2s;
+      transform: rotate(-3deg);
+    }
+
+    /* Active state when it slides out to peek */
+    .secret-note-tab.peek {
+      right: -105px; /* Slides out from edge */
+    }
+
+    .secret-note-tab:hover {
+      right: -90px; /* Slight bounce when hovered */
+      transform: rotate(0deg) scale(1.05);
+    }
+
+    .secret-tab-text {
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: #d81b60;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      letter-spacing: 1px;
+    }
+
+    /* FULL CENTER SECRET NOTE MODAL */
+    .secret-modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .secret-modal.open {
+      display: flex;
+      opacity: 1;
+    }
+
+    .secret-modal-content {
+      background: #fffde7;
+      border: 2px dashed #fbc02d;
+      padding: 2rem;
+      border-radius: 15px;
+      max-width: 400px;
+      width: 85%;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+      position: relative;
+      font-family: 'Comic Sans MS', 'Chalkboard SE', 'Georgia', cursive;
+      text-align: center;
+      transform: rotate(-1deg);
+    }
+
+    .close-secret {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: #888;
+      cursor: pointer;
+    }
+
+    .close-secret:hover { color: #d63384; }
+
+    .secret-modal-text {
+      color: #444;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
     /* Responsive adjustments for mobile screens */
     @media (max-width: 900px) {
       .page-wrapper {
@@ -601,6 +696,31 @@
     </div>
   </div>
 
+  <!-- 📌 SECRET NOTE SIDE TAB (Hidden off-screen until triggered) -->
+  <div class="secret-note-tab" id="secretNoteTab" onclick="openSecretModal()">
+    <span class="secret-tab-text">P.S. 📌</span>
+  </div>
+
+  <!-- 📌 SECRET NOTE FULL MODAL -->
+  <div class="secret-modal" id="secretModal">
+    <div class="secret-modal-content">
+      <span class="close-secret" onclick="closeSecretModal()">&times;</span>
+      <h3 style="color: #d63384; margin-top: 0;">One last secret note for you</h3>
+      <div class="secret-modal-text">
+        <p>P.S.</p>
+        <p>I love you so much, and I hope this small website made your special day even brighter even by a little</p>
+        <p>I know sooner or later we'll be away from each other, by that i mean breaking up</p>
+        <p>I'm not the type of person you'll love/like once you know my true nature</p>
+        <p>I'm not really asking for forgiveness because I know that I really am a terrible person</p>
+        <p>But I do hope that you'll always be happy, safe, and successful</p>
+        <p>I will always love you</p>
+        <p>Also don't forget you still have your "Treat Ticket" There is no expiration date so.. don't forget it :P</p>
+        <p> </p>
+        <p> Yours truly, Tencha Ieiri </p>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ==========================================
     // 🎵 MUSIC PLAYER & OVERLAY UNLOCK LOGIC
@@ -613,7 +733,7 @@
       // Hide welcome overlay
       document.getElementById("welcomeOverlay").classList.add("hidden");
       
-      // Play music directly on tap (bypasses autoplay restrictions)
+      // Play music directly on tap
       bgMusic.play().then(() => {
         musicBtn.innerText = "⏸️";
         musicStatus.innerText = "Playing ♪";
@@ -653,7 +773,7 @@
     
     // Set to 'true' to test the birthday unlock right now!
     // Set to 'false' when you are ready to publish it for July 29th.
-    const TEST_MODE = false;
+    const TEST_MODE = true;
 
     // Target Date: July 29, 2026 at Midnight
     const targetDate = new Date("July 29, 2026 00:00:00").getTime();
@@ -720,7 +840,13 @@
       }
     }
     
-    function closeLetter() { modal.classList.remove("open"); }
+    function closeLetter() { 
+      modal.classList.remove("open"); 
+      // ONLY trigger the secret tab if it's actually birthday time/unlocked!
+      if (isBirthday) {
+        showSecretTab();
+      }
+    }
 
     // --- MULTI-PAGE MAIL SYSTEM LOGIC ---
     let currentMailPage = 1;
@@ -762,6 +888,22 @@
       if (currentMailPage > totalMailPages) currentMailPage = totalMailPages;
       
       updateMailPage();
+    }
+
+    // --- 📌 SECRET NOTE TAB & MODAL LOGIC ---
+    function showSecretTab() {
+      const tab = document.getElementById("secretNoteTab");
+      tab.classList.add("peek");
+    }
+
+    function openSecretModal() {
+      const secretModal = document.getElementById("secretModal");
+      secretModal.classList.add("open");
+    }
+
+    function closeSecretModal() {
+      const secretModal = document.getElementById("secretModal");
+      secretModal.classList.remove("open");
     }
 
     // --- 26-CAROUSEL LOGIC ---
