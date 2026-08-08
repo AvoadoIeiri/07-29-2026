@@ -401,12 +401,10 @@
       font-weight: bold;
     }
 
-    /* ==========================================
-       📌 SECRET SIDE NOTE STYLING
-       ========================================== */
+    /* SECRET SIDE NOTE STYLING */
     .secret-note-tab {
       position: fixed;
-      right: -200px; /* COMPLETELY HIDDEN off-screen until letter closes */
+      right: -200px; /* HIDDEN off-screen until letter closes */
       top: 45%;
       width: 150px;
       height: 100px;
@@ -424,13 +422,12 @@
       transform: rotate(-3deg);
     }
 
-    /* Active state when it slides out to peek */
     .secret-note-tab.peek {
-      right: -105px; /* Slides out from edge */
+      right: -105px;
     }
 
     .secret-note-tab:hover {
-      right: -90px; /* Slight bounce when hovered */
+      right: -90px;
       transform: rotate(0deg) scale(1.05);
     }
 
@@ -494,6 +491,114 @@
       color: #444;
       line-height: 1.6;
       font-size: 1rem;
+    }
+
+    /* TICKET VOUCHER MODAL & FLY IN ANIMATION */
+    .ticket-modal {
+      display: none;
+      position: fixed;
+      z-index: 3000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.65);
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .ticket-modal.open {
+      display: flex;
+      opacity: 1;
+    }
+
+    @keyframes flyInTicket {
+      0% {
+        transform: translateY(-100vh) rotate(-30deg) scale(0.3);
+        opacity: 0;
+      }
+      80% {
+        transform: translateY(15px) rotate(4deg) scale(1.05);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(0) rotate(-2deg) scale(1);
+        opacity: 1;
+      }
+    }
+
+    .ticket-card {
+      background: #fff0f5;
+      border: 3px dashed #d63384;
+      border-radius: 20px;
+      padding: 2rem 1.5rem;
+      max-width: 380px;
+      width: 85%;
+      box-shadow: 0 15px 40px rgba(214, 51, 132, 0.3);
+      position: relative;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    .ticket-modal.open .ticket-card {
+      animation: flyInTicket 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    .close-ticket {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: #888;
+      cursor: pointer;
+    }
+
+    .close-ticket:hover { color: #d63384; }
+
+    .ticket-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #d63384;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .ticket-icon-slot {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1.2rem auto;
+      border: 2px dashed #ffb6c1;
+      border-radius: 50%;
+      background-color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .ticket-icon-slot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .ticket-details {
+      background: white;
+      border-radius: 12px;
+      padding: 12px;
+      border: 1px solid #ffccd5;
+      font-size: 0.95rem;
+      color: #4a4a4a;
+      line-height: 1.6;
+    }
+
+    .ticket-details div {
+      font-weight: bold;
+      color: #b8256f;
     }
 
     /* Responsive adjustments for mobile screens */
@@ -696,27 +801,45 @@
     </div>
   </div>
 
-  <!-- 📌 SECRET NOTE SIDE TAB (Hidden off-screen until triggered) -->
+  <!-- SECRET NOTE SIDE TAB (Hidden off-screen until triggered) -->
   <div class="secret-note-tab" id="secretNoteTab" onclick="openSecretModal()">
     <span class="secret-tab-text">P.S. 📌</span>
   </div>
 
-  <!-- 📌 SECRET NOTE FULL MODAL -->
+  <!-- SECRET NOTE FULL MODAL -->
   <div class="secret-modal" id="secretModal">
     <div class="secret-modal-content">
       <span class="close-secret" onclick="closeSecretModal()">&times;</span>
       <h3 style="color: #d63384; margin-top: 0;">One last secret note for you</h3>
       <div class="secret-modal-text">
         <p>P.S.</p>
-        <p>I love you so much, and I hope this small website made your special day even brighter even by a little</p>
-        <p>I know sooner or later we'll be away from each other, by that i mean breaking up</p>
-        <p>I'm not the type of person you'll love/like once you know my true nature</p>
-        <p>I'm not really asking for forgiveness because I know that I really am a terrible person</p>
-        <p>But I do hope that you'll always be happy, safe, and successful</p>
-        <p>I will always love you</p>
-        <p>Also don't forget you still have your "Treat Ticket" There is no expiration date so.. don't forget it :P</p>
+        <p>Hello Rai, this is a different note from what you've seen before (actually this is the original before i changed it)</p>
+        <p>Problems will come, Love may fade, and everything might feel astray</p>
+        <p>Yet we continue to stay together, despite the challenges and hardships we're facing</p>
+        <p>That proves how much we both love each other</p>
+        <p>And this note is something I've written straight from my heart</p>
+        <p>I will always be someone who will love you, no matter what problem may come</p>
+        <p>And you will always be my Favorite Person</p>
         <p> </p>
         <p> Yours truly, Tencha Ieiri </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLY-IN TICKET VOUCHER MODAL -->
+  <div class="ticket-modal" id="ticketModal">
+    <div class="ticket-card">
+      <span class="close-ticket" onclick="closeTicketModal()">&times;</span>
+      <div class="ticket-title">Eat Whatever You Want Voucher</div>
+      
+      <!-- Icon slot: Replace 'voucher-icon.png' with your icon image path -->
+      <div class="ticket-icon-slot">
+        <img src="teto-stupid.gif" alt="Voucher Icon">
+      </div>
+
+      <div class="ticket-details">
+        <div>Expiration Date: Never</div>
+        <div>Uses: 1</div>
       </div>
     </div>
   </div>
@@ -730,10 +853,8 @@
     const musicStatus = document.getElementById("musicStatus");
 
     function startExperience() {
-      // Hide welcome overlay
       document.getElementById("welcomeOverlay").classList.add("hidden");
       
-      // Play music directly on tap
       bgMusic.play().then(() => {
         musicBtn.innerText = "⏸️";
         musicStatus.innerText = "Playing ♪";
@@ -770,12 +891,7 @@
     // ==========================================
     // ⚙️ TIMER SETTINGS & TESTING SWITCH
     // ==========================================
-    
-    // Set to 'true' to test the birthday unlock right now!
-    // Set to 'false' when you are ready to publish it for July 29th.
     const TEST_MODE = true;
-
-    // Target Date: July 29, 2026 at Midnight
     const targetDate = new Date("July 29, 2026 00:00:00").getTime();
     let isBirthday = false;
 
@@ -792,15 +908,12 @@
         isBirthday = true;
         clearInterval(countdownInterval);
 
-        // Update Header & Container when timer hits 0
         birthdayHeader.innerHTML = 'Happy Birthday! <span class="heart">❤️</span>';
         timerContainer.innerHTML = "<h2 style='color:#d63384; margin: 0.5rem 0;'>It's Your Special Day! 🎉</h2>";
         surpriseBtn.classList.add("unlocked");
         mailEnvelope.classList.add("revealed");
       } else {
         isBirthday = false;
-        
-        // Initial Header Text before timer finishes
         birthdayHeader.innerHTML = 'Your Birthday Counter Starts Now! <span class="heart">❤️</span>';
 
         const days = Math.floor(difference / (1000 * 60 * 60 * 24));
@@ -842,7 +955,6 @@
     
     function closeLetter() { 
       modal.classList.remove("open"); 
-      // ONLY trigger the secret tab if it's actually birthday time/unlocked!
       if (isBirthday) {
         showSecretTab();
       }
@@ -862,7 +974,6 @@
         }
       }
 
-      // Update Navigation Buttons & Page Text
       document.getElementById("mailPageNum").innerText = `Page ${currentMailPage} of ${totalMailPages}`;
       
       const prevBtn = document.getElementById("mailPrevBtn");
@@ -890,7 +1001,7 @@
       updateMailPage();
     }
 
-    // --- 📌 SECRET NOTE TAB & MODAL LOGIC ---
+    // --- SECRET NOTE TAB & MODAL LOGIC ---
     function showSecretTab() {
       const tab = document.getElementById("secretNoteTab");
       tab.classList.add("peek");
@@ -904,6 +1015,19 @@
     function closeSecretModal() {
       const secretModal = document.getElementById("secretModal");
       secretModal.classList.remove("open");
+      // Trigger the flying ticket modal right after closing the secret note
+      openTicketModal();
+    }
+
+    // --- TICKET VOUCHER MODAL LOGIC ---
+    function openTicketModal() {
+      const ticketModal = document.getElementById("ticketModal");
+      ticketModal.classList.add("open");
+    }
+
+    function closeTicketModal() {
+      const ticketModal = document.getElementById("ticketModal");
+      ticketModal.classList.remove("open");
     }
 
     // --- 26-CAROUSEL LOGIC ---
